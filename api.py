@@ -29,15 +29,6 @@ def retriever(chunks, vector_store):
 embedding_model = FastEmbedEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 original_embed_documents = embedding_model.embed_documents
 
-def timed_embed_documents(texts):
-    start = time.perf_counter()
-    embeddings = original_embed_documents(texts)
-    end = time.perf_counter()
-
-    print(f"Embedding generation: {end-start:.2f}s")
-    return embeddings
-
-embedding_model.embed_documents = timed_embed_documents
 UPLOAD_DIR = Path("documents/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 @app.post("/upload")
