@@ -27,15 +27,15 @@
 * created splits for each document using the longchain RecursiveCharcterTextsplitter
 * converted the splits into embeddings(numerical vectors) using langchain HuggingfaceEmbeddings
 * Stored the embeddings into vector space using chroma
-* Use the stored vectors to search meanings in data, which retriever
+* Use the stored vectors to search meanings in data, used mmr retriever.
 * To search based on user's question keywords, used BM25 retriever.
 * To search meaning, patterns with similar keywords search, I used hybrid search.
-* To re-evaluate the similar chunks, used CrossEncoder.
 * After finding the similar context based on the user's question.
 * Send the context and query to the LLM model, which is from chatOpenRouter.
 * It will return user interactive response using those chunks.
 * Connected the fastapi endpoints.
 * Used streamlit for web based interaction.
+* Deployed using the render host.
 
 ## What I learned
 * I have built this model from scratch.
