@@ -14,6 +14,7 @@
 - **Github repository:** https://github.com/f4789343-pixel/Document-Intelligence-chatbot.git
 
 ### Optimization time(on average)
+- **upload time:** 12.85s
 - **Retrieval:** 0.18s
 - **Context preparation:** 0.00s
 - **LLM generation:** 7.03s
@@ -21,7 +22,7 @@
   
 * Initial requests may take longer to respond cause of free render host.
 * generation timing is also vary by questions and server availability.
-
+* Upload time is varied by file size, multiple files may take upload time: 23.55 seconds.
 ## implementation
 * Load the documents using langchain TextLoader
 * created splits for each document using the longchain RecursiveCharcterTextsplitter
