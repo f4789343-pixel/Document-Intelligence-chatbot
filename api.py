@@ -47,8 +47,20 @@ def upload(files: list[UploadFile] = File(...)):
   print(f"upload time: {end - start:.2f} seconds")
   return {"message": "Document uploaded and indexed successfully"}
 
-reranking = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+reranking = None
+def get_reranker():
+    global reranking
+
+    if reranking is None:
+        print("Loading CrossEncoder model...")
+        reranking = CrossEncoder(
+            "cross-encoder/ms-marco-MiniLM-L-6-v2"
+        )
+        print("CrossEncoder loaded successfully")
+
+    return reranking
 def retrieval_context(retrieved_chunks,query, top_k=3):
+  reranking = get_reranker()
   pairs = [[query, doc.page_content] for doc in retrieved_chunks]
   scores = reranking.predict(pairs)
   ranked_results = sorted(zip(retrieved_chunks, scores), key=lambda item: item[1], reverse=True)
