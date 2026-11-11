@@ -1,4 +1,3 @@
-print("STEP 1: Starting imports")
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from pathlib import Path
 from langchain_community.retrievers import BM25Retriever
@@ -15,11 +14,8 @@ from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 import time
 
-print("STEP 2: Imports completed")
 load_dotenv()
 app = FastAPI()
-
-print("STEP 3: FastAPI app created")
 
 
 def retriever(chunks, vector_store):
@@ -99,7 +95,8 @@ def chat(data: Question):
   print(f"LLM generation: {t4-t3:.2f}s")
   print(f"Total: {t4-start:.2f}s")
   print(f"response time: {end - start:.2f} seconds")
-  return {"response": response.content} 
+  return {"response": response.content}
+
 
 
 

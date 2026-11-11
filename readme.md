@@ -13,6 +13,14 @@
 - **API Documentation (Swagger):** https://document-intelligence-chatbot-1.onrender.com/docs
 - **Github repository:** https://github.com/f4789343-pixel/Document-Intelligence-chatbot.git
 
+### maximum response time
+- **Retrieval:** 0.18s
+- **Context preparation:** 0.00s
+- **LLM generation:** 7.03s
+- **total response time:** 7.20 seconds
+* Initial requests may take longer to respond cause of free render host.
+* generation timing is also vary by questions and server availabilty.
+
 ## implementation
 * Load the documents using langchain TextLoader
 * created splits for each document using the longchain RecursiveCharcterTextsplitter
