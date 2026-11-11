@@ -32,19 +32,33 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 @app.post("/upload")
 def upload(files: list[UploadFile] = File(...)):
   start = time.perf_counter()
+  
   for file in files:
+   t1 = time.perf_counter()
+    
    file_path = UPLOAD_DIR / file.filename
    with open(file_path, "wb") as buffer:
     shutil.copyfileobj(file.file, buffer)
+
+   t2 = time.perf_counter()
    loader = TextLoader(str(file_path), encoding="utf-8")
    documents = loader.load()
+   t3 = time.perf_counter()
    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
    chunks = text_splitter.split_documents(documents)
+   t4 = time.perf_counter()
    vector_store = Chroma(collection_name="busines_information", embedding_function=embedding_model, persist_directory="./chroma_db")
    vector_store.add_documents(chunks)
+   t5 = time.perf_counter()
    hybrid_retriever = retriever(chunks, vector_store)
    app.state.hybrid_retriever = hybrid_retriever
+   t6 = time.perf_counter()
    end = time.perf_counter()
+  print(f"File saving: {t2-t1:.2f}s")
+  print(f"Document loading: {t3-t2:.2f}s")
+  print(f"Text splitting: {t4-t3:.2f}s")
+  print(f"Embedding + storage: {t5-t4:.2f}s")
+  print(f"Retriever creation: {t6-t5:.2f}s")
   print(f"upload time: {end - start:.2f} seconds")
   return {"message": "Document uploaded and indexed successfully"}
 
