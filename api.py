@@ -26,7 +26,7 @@ def retriever(chunks, vector_store):
   hybrid_retriever = EnsembleRetriever(retrievers=[vector_retriever, bm25_retriever], weights=[0.5,0.5])
   return hybrid_retriever
 
-embedding_model = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+embedding_model = FastEmbedEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 original_embed_documents = embedding_model.embed_documents
 
 def timed_embed_documents(texts):
