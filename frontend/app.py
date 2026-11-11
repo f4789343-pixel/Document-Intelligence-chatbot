@@ -4,7 +4,7 @@ import requests
 if "chat_history" not in st.session_state:
   st.session_state.chat_history = []
 
-API_URL = "http://127.0.0.1:8000"
+API_URL = "https://document-intelligence-chatbot-ch2y.onrender.com"
 
 st.title("Document Intelligence Chatbot")
 
