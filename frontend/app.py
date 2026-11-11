@@ -20,8 +20,8 @@ if st.button("Test Connection"):
       st.write("Status code:", response.status_code)
       st.write("Response URL:", response.url)
       st.write("Response:", response.text[:1000])
-  except requests.exceptions.ConnectionError:
-    st.error("Could not connect to the FastAPI")
+  except requests.exceptions.ConnectionError as e:
+    st.error(f"Connection failed: {type(e).__name__}: {e}")
 
 
 upload_files = st.file_uploader("Choose a files", type=["pdf", "txt"], accept_multiple_files=True)
