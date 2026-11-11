@@ -1,8 +1,8 @@
+print("STEP 1: Starting imports")
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from pathlib import Path
 from langchain_community.retrievers import BM25Retriever
 from langchain_classic.retrievers import EnsembleRetriever
-from sentence_transformers import CrossEncoder
 import shutil
 from langchain_community.document_loaders import TextLoader
 from pydantic import BaseModel
@@ -11,20 +11,26 @@ from langchain_openrouter import ChatOpenRouter
 from dotenv import load_dotenv
 import os
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 import time
+
+print("STEP 2: Imports completed")
 load_dotenv()
 app = FastAPI()
 
-def retreiver(chunks, vector_store):
+print("STEP 3: FastAPI app created")
+
+
+def retriever(chunks, vector_store):
   bm25_retriever = BM25Retriever.from_documents(chunks, k=3)
 
-  vector_retriever = vector_store.as_retriever(search_kwargs={"k":3})
+  vector_retriever = vector_store.as_retriever(search_type="mmr",search_kwargs={"k":3,"fetch_k":15,"lambda_mult":0.5})
 
   hybrid_retriever = EnsembleRetriever(retrievers=[vector_retriever, bm25_retriever], weights=[0.5,0.5])
   return hybrid_retriever
 
+embedding_model = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 UPLOAD_DIR = Path("documents/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 @app.post("/upload")
@@ -38,34 +44,15 @@ def upload(files: list[UploadFile] = File(...)):
    documents = loader.load()
    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
    chunks = text_splitter.split_documents(documents)
-   embedding_model = HuggingFaceEmbeddings(model="sentence-transformers/all-MiniLM-L6-v2")
    vector_store = Chroma(collection_name="busines_information", embedding_function=embedding_model, persist_directory="./chroma_db")
    vector_store.add_documents(chunks)
-   hybrid_retriever = retreiver(chunks, vector_store)
+   hybrid_retriever = retriever(chunks, vector_store)
    app.state.hybrid_retriever = hybrid_retriever
    end = time.perf_counter()
   print(f"upload time: {end - start:.2f} seconds")
   return {"message": "Document uploaded and indexed successfully"}
 
-reranking = None
-def get_reranker():
-    global reranking
 
-    if reranking is None:
-        print("Loading CrossEncoder model...")
-        reranking = CrossEncoder(
-            "cross-encoder/ms-marco-MiniLM-L-6-v2"
-        )
-        print("CrossEncoder loaded successfully")
-
-    return reranking
-def retrieval_context(retrieved_chunks,query, top_k=3):
-  reranking = get_reranker()
-  pairs = [[query, doc.page_content] for doc in retrieved_chunks]
-  scores = reranking.predict(pairs)
-  ranked_results = sorted(zip(retrieved_chunks, scores), key=lambda item: item[1], reverse=True)
-  context = "\n\n".join(doc.page_content for doc, _ in ranked_results[:top_k])
-  return context
 print("OpenRouter API key loaded:", bool(os.getenv("OPENROUTER_API_KEY")))
 class Question(BaseModel):
   question: str
@@ -80,17 +67,25 @@ def chat(data: Question):
   t1 = time.perf_counter()
   retrieved_chunks = hybrid_retriever.invoke(data.question)
   t2 = time.perf_counter()
-  context = retrieval_context(retrieved_chunks, data.question)
+  context = "\n\n".join(doc.page_content for doc in retrieved_chunks[:3])
   t3 = time.perf_counter()
   prompt = ChatPromptTemplate.from_template("""
-       Answer the question using only the provided context.
-       If the answer is not available in the context, say "I don't know based on the provided documents."
-       Context:
-       {context}
-       Question:
-       {question}
-       Answer:
-       """)
+    Answer the question using only the provided context.
+
+    Keep the answer concise and direct.
+    Do not include lengthy reasoning or explanations.
+    Provide the answer in 3-5 sentences when possible.
+
+    If the answer is unavailable in the context, say:
+    "I don't know based on the provided documents."
+
+    Context:
+    {context}
+
+    Question:
+    {question}
+
+    Answer:""")
   llm = ChatOpenRouter(model="liquid/lfm-3-1.7b:free", temperature=0, max_tokens=2048)
   rag_chain = prompt | llm
   response = rag_chain.invoke({"context": context, "question": data.question})
