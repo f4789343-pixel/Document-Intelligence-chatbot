@@ -6,6 +6,13 @@
 * Ask questions about the documents.
 * chatbot will answer the questions based on the documents that user provided.
 
+## Live Demo
+
+- **Streamlit Frontend:** https://document-intelligence-chatbot-ch2y.onrender.com
+- **FastAPI Backend:** https://document-intelligence-chatbot-1.onrender.com
+- **API Documentation (Swagger):** https://document-intelligence-chatbot-1.onrender.com/docs
+- **Github repository:** https://github.com/f4789343-pixel/Document-Intelligence-chatbot.git
+
 ## implementation
 * Load the documents using langchain TextLoader
 * created splits for each document using the longchain RecursiveCharcterTextsplitter
