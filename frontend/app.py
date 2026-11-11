@@ -34,7 +34,7 @@ if upload_files:
      if response.status_code == 200:
        st.success("Uploaded successfully!")
      else:
-       st.error(f"Upload failed {response.text}")
+       st.error(f"Upload failed")
     except requests.exceptions.ConnectionError:
      st.error("Could not connect to FastAPI.")
 
