@@ -13,7 +13,7 @@
 - **API Documentation (Swagger):** https://document-intelligence-chatbot-1.onrender.com/docs
 - **Github repository:** https://github.com/f4789343-pixel/Document-Intelligence-chatbot.git
 
-### maximum response time
+### Optimization time
 - **Retrieval:** 0.18s
 - **Context preparation:** 0.00s
 - **LLM generation:** 7.03s
