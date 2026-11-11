@@ -82,9 +82,14 @@ def chat(data: Question):
     {question}
 
     Answer:""")
-  llm = ChatOpenRouter(model="liquid/lfm-3-1.7b:free", temperature=0, max_tokens=2048)
-  rag_chain = prompt | llm
-  response = rag_chain.invoke({"context": context, "question": data.question})
+  try:
+   llm = ChatOpenRouter(model="liquid/lfm-3-1.7b:free", temperature=0, max_tokens=2048)
+   rag_chain = prompt | llm
+   response = rag_chain.invoke({"context": context, "question": data.question})
+  except Exception as e:
+    raise HTTPException(
+        status_code=503,
+        detail=f"LLM service temporarily unavailable: {str(e)}")
   print("RAW RESPONSE:", repr(response.content))
   print("METADATA:", response.response_metadata)
   print("USAGE:", response.usage_metadata)
