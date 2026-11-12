@@ -1,5 +1,21 @@
 import streamlit as st
 import requests
+import time
+
+def api_request(method, url, **kwargs):
+    for attempt in range(3):
+        try:
+            response = requests.request(
+                method,
+                url,
+                timeout=120,
+                **kwargs
+            )
+            return response
+        except requests.exceptions.ConnectionError:
+            if attempt == 2:
+                raise
+            time.sleep(5)
 
 if "chat_history" not in st.session_state:
   st.session_state.chat_history = []
@@ -12,7 +28,7 @@ st.text("FastAPI Connection")
 
 if st.button("Test Connection"):
   try:
-    response = requests.get(f"{API_URL}/docs")
+    response = api_request("GET", f"{API_URL}/")
     if response.status_code == 200:
       st.write("Successfully connected to FastAPI!")
     else:
@@ -30,7 +46,7 @@ if upload_files:
      files.append(("files", (upload_file.name, upload_file.getvalue(), upload_file.type)))
     url = f"{API_URL}/upload"
     try:
-     response = requests.post(url, files=files)
+     response = api_request("POST", url, files=files)
      if response.status_code == 200:
        st.success("Uploaded successfully!")
      else:
@@ -43,7 +59,7 @@ prompt = st.chat_input("Ask a question about the files....")
 try:
  if prompt:
   url = f"{API_URL}/chat"
-  response = requests.post(url, json={"question":prompt})
+  response = api_request("POST", url, json={"question":prompt})
   if response.status_code == 200:
     st.session_state.chat_history.append({"user":prompt})
     answer = response.json()['response']
