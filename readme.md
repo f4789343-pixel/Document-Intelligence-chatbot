@@ -9,8 +9,8 @@
 ## Live Demo
 
 - **Streamlit Frontend:** https://document-intelligence-chatbot-ch2y.onrender.com
-- **FastAPI Backend:** https://document-intelligence-chatbot-1.onrender.com
-- **API Documentation (Swagger):** https://document-intelligence-chatbot-1.onrender.com/docs
+- **FastAPI Backend:** https://document-intelligence-chatbot-4.onrender.com
+- **API Documentation (Swagger):** https://document-intelligence-chatbot-4.onrender.com/docs
 - **Github repository:** https://github.com/f4789343-pixel/Document-Intelligence-chatbot.git
 
 ### Optimization time(on average)
