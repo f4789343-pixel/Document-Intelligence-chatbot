@@ -3,7 +3,7 @@ import requests
 import time
 
 def api_request(method, url, **kwargs):
-    for attempt in range(3):
+    for attempt in range(6):
         try:
             response = requests.request(
                 method,
@@ -11,11 +11,19 @@ def api_request(method, url, **kwargs):
                 timeout=120,
                 **kwargs
             )
+
+            if method.upper() == "GET" and response.status_code in [502, 503, 504]:
+                if attempt < 5:
+                    time.sleep(10)
+                    continue
+
             return response
-        except requests.exceptions.ConnectionError:
-            if attempt == 2:
+
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.Timeout):
+            if attempt == 5:
                 raise
-            time.sleep(5)
+            time.sleep(10)
 
 if "chat_history" not in st.session_state:
   st.session_state.chat_history = []
