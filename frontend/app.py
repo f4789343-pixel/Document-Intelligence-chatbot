@@ -36,7 +36,7 @@ st.text("FastAPI Connection")
 
 if st.button("Test Connection"):
   try:
-    response = api_request("GET", f"{API_URL}/")
+    response = api_request("GET", f"{API_URL}/docs")
     if response.status_code == 200:
       st.write("Successfully connected to FastAPI!")
     else:
