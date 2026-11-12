@@ -28,7 +28,7 @@ def api_request(method, url, **kwargs):
 if "chat_history" not in st.session_state:
   st.session_state.chat_history = []
 
-API_URL = "https://document-intelligence-chatbot-2.onrender.com"
+API_URL = "https://document-intelligence-chatbot-4.onrender.com"
 
 st.title("Document Intelligence Chatbot")
 
